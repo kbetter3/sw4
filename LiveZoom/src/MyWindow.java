@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 
 public class MyWindow extends JFrame {
 	private BufferedImage backgroundImage = null;
+	private int mx, my;
 	private int dx, dy, sx, sy;
 	private boolean mouseMoved = false;
 	
@@ -65,6 +66,45 @@ public class MyWindow extends JFrame {
 		this.setUndecorated(true);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
+		
+		Thread t = new Thread(){
+			@Override
+			public void run() {
+				
+				try {
+					while (true) {
+						if (mouseMoved) {
+							dx = mx - 150;
+							sx = mx - 25;
+							if (mx < 150) {
+								dx = 0;
+								if (mx < 25)
+									sx = 0;
+							} else if (mx > screenSize.width - 25) {
+								sx = screenSize.width - 50;
+							}
+							
+							dy = my - 150;
+							sy = my - 25;
+							if (my < 150) {
+								dy = 0;
+								if (my < 25)
+									sy = 0;
+							} else if (my > screenSize.height - 25) {
+								sy = screenSize.height - 50;
+							}
+							
+							mainPanel.repaint();
+						}
+						Thread.sleep(1000 / 60);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		t.setDaemon(true);
+		t.start();
 	}
 
 	private void event() {
@@ -80,39 +120,14 @@ public class MyWindow extends JFrame {
 		mainPanel.addMouseMotionListener(new MouseMotionListener(){
 			@Override
 			public void mouseDragged(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
 			}
 
 			@Override
 			public void mouseMoved(MouseEvent arg0) {
-				int mx = arg0.getX();
-				int my = arg0.getY();
-				
-				if (mouseMoved) {
-					dx = mx - 150;
-					sx = mx - 25;
-					if (mx < 150) {
-						dx = 0;
-						if (mx < 25)
-							sx = 0;
-					} else if (mx > screenSize.width - 25) {
-						sx = screenSize.width - 50;
-					}
-					
-					dy = my - 150;
-					sy = my - 25;
-					if (my < 150) {
-						dy = 0;
-						if (my < 25)
-							sy = 0;
-					} else if (my > screenSize.height - 25) {
-						sy = screenSize.height - 50;
-					}
-				}
+				mx = arg0.getX();
+				my = arg0.getY();
 				
 				mouseMoved = true;
-				mainPanel.repaint();
 			}});
 	}
 
